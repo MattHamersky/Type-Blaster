@@ -12,7 +12,7 @@ import Main.GamePanel;
 /*
  * ToDo:
  * 
- * need to find sprites for the following explosions: nuclearExplosion, fireworksExplosion, healthExplosion, clearanceExplosion
+ * need to find sprites for the following explosions: nuclearExplosion, fireworksExplosion
  * 
  * credit Kevin MacLeod for music in readme
  */

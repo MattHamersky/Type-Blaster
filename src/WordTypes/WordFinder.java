@@ -96,6 +96,15 @@ public class WordFinder {
 				}
 			}
 			
+			//fireworks explosion for the flashy word "fireworks"
+			fireworksExplosion = new BufferedImage[12];
+			temp = ImageIO.read(WordFinder.class.getResourceAsStream("/sprites/fireworks_explosion.png"));
+			for(int i = 0; i < 3; i++) {
+				for(int k = 0; k < 4; k++) {
+					fireworksExplosion[(i*4)+k] = temp.getSubimage(k * 256, i * 256, 256, 256);
+				}
+			}
+			
 			//initialize RNG
 			rand = new Random(System.currentTimeMillis());
 			
@@ -144,6 +153,7 @@ public class WordFinder {
 	
 	public static Word getSpecialWord(int row) {
 		System.out.println("special");
+		//originally 13
 		int specialWord = rand.nextInt(100); //random int to decide which of the special words we spawn in
 		//fast words
 		if(specialWord >= 0 && specialWord <= 3) {
@@ -161,7 +171,7 @@ public class WordFinder {
 	
 	private static FlashyWord getFlashyWord(int row) {
 		System.out.println("flashy");
-		int newSpecialWord = rand.nextInt(1)+6;
+		int newSpecialWord = rand.nextInt(1)+4;
 		switch(newSpecialWord) {
 			case 0:
 				return new NuclearWord("nuclear", row, nuclearExplosion, destroyedExplosion);
