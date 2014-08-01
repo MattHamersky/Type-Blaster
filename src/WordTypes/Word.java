@@ -18,6 +18,7 @@ public class Word {
 	
 	protected double speed = ((MainMenuState.difficulty + 1) * 3) / 2;
 	protected double x = 1300; //start slightly offscreen on the right
+	protected double adjustedXValue = 1300;
 	protected double y;
 	protected int row;
 	protected Color wordColor = Color.WHITE;
@@ -30,6 +31,8 @@ public class Word {
 	
 	protected String word;
 	protected int correctLetters = 0; //how many letters the player has correctly typed in this word
+	
+	protected FontMetrics fm = null;
 
 	public Word(String word, int row, BufferedImage[] explosion, BufferedImage[] destroyedExplosion) {
 		this.word = word;
@@ -52,18 +55,28 @@ public class Word {
 		}
 	}
 	
-	public void draw(Graphics2D g) {
+	public void draw(Graphics2D g, double percentBetweenUpdates, boolean gameover) {
 		if(!isExploding && !isBeingDestroyed) {
-			drawWordProgress(g);
+			drawWordProgress(g, percentBetweenUpdates, gameover);
 		}
 		else {
 			drawExplosionProgress(g);
 		}
 	}
 	
-	public void drawWordProgress(Graphics2D g) {
-		FontMetrics fm = g.getFontMetrics();
+	public void drawWordProgress(Graphics2D g, double percentBetweenUpdates, boolean gameover) {
+		if(fm == null) {
+			fm = g.getFontMetrics();
+		}
 		Rectangle2D rect = null;
+		
+		if(!gameover) {
+			adjustedXValue = x - Math.round(speed * percentBetweenUpdates);
+		}
+		else {
+			adjustedXValue = x;
+		}
+		
 		//if the player has typed at least one correct letter so far
 		if(correctLetters != 0) {
 			rect = fm.getStringBounds(word.substring(0, correctLetters), g);
@@ -72,13 +85,13 @@ public class Word {
 			g.setColor(Color.RED);
 			g.drawString(
 					word.substring(0, correctLetters),
-					(int) x,
+					(int) adjustedXValue,
 					(int) y
 			);
 		}
 		
 		//draw the remaining letters that need to be typed (in white)
-		double tempx = x;
+		double tempx = adjustedXValue;
 		if(rect != null) {
 			tempx += rect.getWidth();
 		}
@@ -106,7 +119,7 @@ public class Word {
 		}
 	}
 	
-	public int getX() { return (int) x; }
+	public int getX() { return (int) adjustedXValue; }
 	public int getRow() { return row; }
 	public boolean isExploding() { return isExploding; }
 	public boolean isBeingDestroyed() { return isBeingDestroyed; }

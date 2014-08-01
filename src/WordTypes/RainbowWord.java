@@ -44,9 +44,17 @@ public class RainbowWord extends Word {
 	}
 	
 	@Override
-	public void drawWordProgress(Graphics2D g) {
+	public void drawWordProgress(Graphics2D g, double percentBetweenUpdates, boolean gameover) {
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D rect = null;
+		
+		if(!gameover) {
+			adjustedXValue = x - Math.round(speed * percentBetweenUpdates);
+		}
+		else {
+			adjustedXValue = x;
+		}
+		
 		//if the player has typed at least one correct letter so far
 		if(correctLetters != 0) {
 			rect = fm.getStringBounds(word.substring(0, correctLetters), g);
@@ -55,12 +63,12 @@ public class RainbowWord extends Word {
 			g.setColor(Color.RED);
 			g.drawString(
 					word.substring(0, correctLetters),
-					(int) x,
+					(int) adjustedXValue,
 					(int) y
 			);
 		}
 		
-		double tempx = x; //the relative x coordinate for drawing the remaining letters
+		double tempx = adjustedXValue; //the relative x coordinate for drawing the remaining letters
 		
 		//draw the remaining letters that need to be typed (in their respective color)
 		for(int i = correctLetters; i < word.length(); i++) {

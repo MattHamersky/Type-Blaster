@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
@@ -17,14 +18,25 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public static final int HEIGHT = 720;
 	
 	private Thread thread;
-	private int fps = 30;
-	private int targetTime = 1000 / fps;
+	private int fps;
+	private int updatesPerSecond = 30;
+	private int targetUpdateTime = 1000 / updatesPerSecond;
 	private boolean isRunning = true;
 	
 	private BufferedImage image;
 	private Graphics2D g;
 	
 	private GameStateManager gsm;
+	
+	private static volatile boolean drawInfo = false;
+	private Font infoFont;
+	private long timeElapsed;
+	private long updateElapsedTime;
+	private long renderElapsedTime;
+	private long drawElapsedTime;
+	private long accumulatedTime = 0;
+	
+	private double percentBetweenUpdates;
 	
 	public GamePanel() {
 		
@@ -50,21 +62,37 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 		while(isRunning) {
 			
+			//start the clock!
 			long startTime = System.nanoTime();
 			
-			update();
+			//update the game if enough time has been accumulated
+			while(accumulatedTime >= targetUpdateTime) {
+				update();
+				accumulatedTime -= targetUpdateTime;
+			}
+			
+			//how long all updates took
+			updateElapsedTime = System.nanoTime() - startTime;
+			
+			//how far we are between the last update and the next update
+			percentBetweenUpdates = ((double) accumulatedTime) / targetUpdateTime;
 			render();
+			
+			//how long it took to render the frame
+			renderElapsedTime = System.nanoTime() - startTime - updateElapsedTime;
+			
 			draw();
 			
-			long timeElapsed = (System.nanoTime() - startTime) / 1000000;
-			long waitTime = targetTime - timeElapsed;
-			if(waitTime > 0) {
-				try {
-					Thread.sleep(waitTime);
-				} catch(Exception e) {
-					e.printStackTrace();
-				}
-			}
+			//how long it took to draw the final frame to the screen
+			drawElapsedTime = System.nanoTime() - startTime - renderElapsedTime;
+			
+			//total time it took to finalize one tick
+			timeElapsed = (System.nanoTime() - startTime - updateElapsedTime) / 1000000;
+			
+			//how much time gets added to the accumulator which keeps tabs on when our next update should be
+			accumulatedTime += timeElapsed;
+			
+			fps = (int) (1000 / timeElapsed);
 		}
 	}
 	
@@ -74,6 +102,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g = image.createGraphics();
 		
 		gsm = new GameStateManager();
+		
+		infoFont = new Font("Arial", Font.PLAIN, 12);
 		
 	}
 	
@@ -86,7 +116,52 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		g.setColor(Color.BLACK);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
-		gsm.draw(g);
+		
+		double tweenValueForUpdates = (Math.min(1.0, percentBetweenUpdates));
+		gsm.draw(g, tweenValueForUpdates);
+		
+		
+		//draw debug info
+		if(drawInfo) {
+			g.setColor(Color.WHITE);
+			g.setFont(infoFont);
+			g.drawString(
+					"FPS: " + Integer.toString(fps),
+					15,
+					15
+			);
+			
+			g.drawString(
+					"Target update time: " + Double.toString(targetUpdateTime) + " ms",
+					15,
+					30
+			);
+			
+			g.drawString(
+					"Tick time: " + Long.toString(timeElapsed) + " ms",
+					15,
+					45
+			);
+			
+			g.drawString(
+					"Update time: " + Long.toString(updateElapsedTime / 1000000) + " ms",
+					15,
+					60
+			);
+			
+			g.drawString(
+					"Render time: " + Long.toString(renderElapsedTime / 1000000) + " ms",
+					15,
+					75
+			);
+			
+			g.drawString(
+					"Draw time: " + Long.toString(drawElapsedTime / 1000000) + " ms",
+					15,
+					90
+			);
+					
+		}
 	}
 	
 	
@@ -95,12 +170,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		Graphics bbg = getGraphics();
 		bbg.drawImage(image, 0, 0, WIDTH, HEIGHT, null);
 		bbg.dispose();
-		image.flush();
+		//image.flush();
 		
 	}
 	
 	@Override
 	public void keyPressed(KeyEvent key) {
+		if(key.getKeyCode() == KeyEvent.VK_SHIFT) {
+			if(drawInfo) {
+				drawInfo = false;
+			}
+			else {
+				drawInfo = true;
+			}
+		}
 		gsm.keyPressed(key.getKeyCode());
 	}
 	
@@ -111,8 +194,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	}
 	
 	
-	//not using
 	@Override
-	public void keyTyped(KeyEvent key) {}
+	public void keyTyped(KeyEvent key) {
+		//if(key.get() == KeyEvent.VK_QUESTION_MARK);
+	}
 	
 }

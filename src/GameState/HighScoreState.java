@@ -228,7 +228,7 @@ public class HighScoreState extends GameState{
 	}
 
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(Graphics2D g, double percentBetweenUpdates) {
 		FontMetrics fm;
 		Rectangle2D rect;
 		

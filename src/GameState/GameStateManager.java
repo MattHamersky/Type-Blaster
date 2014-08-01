@@ -6,7 +6,7 @@ import java.awt.Graphics2D;
 public class GameStateManager {
 	
 	private GameState[] gameStates;
-	private int currentState = 1;
+	private int currentState = 0;
 	
 	public static final int OPENINGSTATE = 0;
 	public static final int MAINMENUSTATE = 1;
@@ -43,8 +43,8 @@ public class GameStateManager {
 		gameStates[currentState].update();
 	}
 	
-	public void draw(Graphics2D g) {
-		gameStates[currentState].draw(g);
+	public void draw(Graphics2D g, double percentBetweenUpdates) {
+		gameStates[currentState].draw(g, percentBetweenUpdates);
 	}
 	
 	public void keyPressed(int code) {

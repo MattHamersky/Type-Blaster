@@ -41,7 +41,8 @@ public class FlashWord extends FlashyWord {
 				toBeDeleted = true;
 			}
 			else {
-				 g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
+				g.setColor(Color.WHITE);
+				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, alpha));
 				g.fillRect(
 						0,
 						0,

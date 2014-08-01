@@ -4,8 +4,7 @@ import GameState.MainMenuState;
 
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
-
-
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Random;
 import java.io.BufferedReader;
@@ -17,6 +16,9 @@ public class WordFinder {
 	private static ArrayList<String> mediumWords = new ArrayList<String>();
 	private static ArrayList<String> hardWords = new ArrayList<String>();
 	private static ArrayList<String> insaneWords = new ArrayList<String>();
+	
+	private static ArrayList<String> currentWordList;
+	private static int counter = 0;
 	
 	public static BufferedImage[] explosion; //regular explosion for contacting the ship
 	public static BufferedImage[] destroyedExplosion; //regular explosion for when a word is fully typed, smaller than "explosion"
@@ -105,6 +107,15 @@ public class WordFinder {
 				}
 			}
 			
+			//nuclear explosion for the flashy word "nuclear"
+			nuclearExplosion = new BufferedImage[12];
+			temp = ImageIO.read(WordFinder.class.getResourceAsStream("/sprites/nuclear_explosion.png"));
+			for(int i = 0; i < 4; i++) {
+				for(int k = 0; k < 3; k++) {
+					nuclearExplosion[(i*3)+k] = temp.getSubimage(k * 512, i * 256, 512, 256);
+				}
+			}
+			
 			//initialize RNG
 			rand = new Random(System.currentTimeMillis());
 			
@@ -113,48 +124,51 @@ public class WordFinder {
 		}
 	}
 	
-	public static Word getWord(int row) {
+	private static ArrayList<String> getDifficultyWordList() {
 		switch(MainMenuState.difficulty) {
-			case 0:  //easy
-				return new Word(easyWords.get(rand.nextInt(easyWords.size())), row, explosion, destroyedExplosion);
-			
-			case 1: //medium
-				return new Word(mediumWords.get(rand.nextInt(mediumWords.size())), row, explosion, destroyedExplosion);
-			
-			case 2: //hard
-				return new Word(hardWords.get(rand.nextInt(hardWords.size())), row, explosion, destroyedExplosion);
+			case 0:
+				return easyWords;
 				
-			case 3: //insane
-				return new Word(insaneWords.get(rand.nextInt(insaneWords.size())), row, explosion, destroyedExplosion);
+			case 1:
+				return mediumWords;
 				
+			case 2:
+				return hardWords;
+				
+			case 3:
+				return insaneWords;
+			
 			default:
-				return null;
+				return easyWords;
 		}
+	}
+	
+	public static void randomizeWords() {
+		currentWordList = getDifficultyWordList();
+		counter = 0;
+		Collections.shuffle(currentWordList, new Random(System.nanoTime()));
+	}
+	
+	private static int getCurrCounter() {
+		int tempCounter = counter;
+		counter++;
+		if(counter >= currentWordList.size()) {
+			counter = 0;
+		}
+		return tempCounter;
+	}
+	
+	public static Word getWord(int row) {
+		return new Word(currentWordList.get(getCurrCounter()), row, explosion, destroyedExplosion);
 	}
 	
 	public static String getWord() {
-		switch(MainMenuState.difficulty) {
-			case 0:  //easy
-				return easyWords.get(rand.nextInt(easyWords.size()));
-			
-			case 1: //medium
-				return mediumWords.get(rand.nextInt(mediumWords.size()));
-			
-			case 2: //hard
-				return hardWords.get(rand.nextInt(hardWords.size()));
-				
-			case 3: //insane
-				return insaneWords.get(rand.nextInt(insaneWords.size()));
-				
-			default:
-				return null;
-		}
+		return currentWordList.get(getCurrCounter());
 	}
 	
 	public static Word getSpecialWord(int row) {
-		System.out.println("special");
 		//originally 13
-		int specialWord = rand.nextInt(100); //random int to decide which of the special words we spawn in
+		int specialWord = rand.nextInt(13); //random int to decide which of the special words we spawn in
 		//fast words
 		if(specialWord >= 0 && specialWord <= 3) {
 			return new FastWord(getWord(), row, explosion, destroyedExplosion);
@@ -170,11 +184,10 @@ public class WordFinder {
 	}
 	
 	private static FlashyWord getFlashyWord(int row) {
-		System.out.println("flashy");
-		int newSpecialWord = rand.nextInt(1)+4;
+		int newSpecialWord = rand.nextInt(7); //number of "flashy" words i have
 		switch(newSpecialWord) {
 			case 0:
-				return new NuclearWord("nuclear", row, nuclearExplosion, destroyedExplosion);
+				return new NuclearWord("nuclear", row, nuclearExplosion, nuclearExplosion);
 				
 			case 1:
 				return new FlashyWord("smoke", row, smokeExplosion, smokeExplosion);

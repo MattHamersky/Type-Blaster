@@ -56,10 +56,10 @@ public class OpeningState extends GameState {
 		}
 	}
 	
-	public void draw(Graphics2D g) {
+	public void draw(Graphics2D g, double percentBetweenUpdates) {
 		if(isFinished()) {
 			//reset alpha to fully opaque
-			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 0f));
+			g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 			gsm.changeState(GameStateManager.MAINMENUSTATE);
 			return;
 		}
@@ -77,8 +77,7 @@ public class OpeningState extends GameState {
 	public void keyPressed(int key) {
 		if(key == KeyEvent.VK_UP ||
 		   key == KeyEvent.VK_ESCAPE ||
-		   key == KeyEvent.VK_SPACE ||
-		   key == KeyEvent.VK_ENTER){
+		   key == KeyEvent.VK_SPACE){
 			finished();
 		}
 	}

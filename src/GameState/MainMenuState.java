@@ -12,7 +12,9 @@ import Main.GamePanel;
 /*
  * ToDo:
  * 
- * need to find sprites for the following explosions: nuclearExplosion, fireworksExplosion
+ * Add points that flash onto the screen when a word is destroyed.  Similar to arcade games
+ * 
+ * Change java icon to game logo
  * 
  * credit Kevin MacLeod for music in readme
  */
@@ -67,7 +69,7 @@ public class MainMenuState extends GameState {
 	}
 	
 	@Override
-	public void draw(Graphics2D g) {
+	public void draw(Graphics2D g, double percentBetweenUpdates) {
 		g.setFont(titleFont);
 		
 		FontMetrics fm = g.getFontMetrics();
