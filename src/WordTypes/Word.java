@@ -145,7 +145,7 @@ public class Word {
 	}
 	
 	public void nextLetter(char letterTyped) {
-		if(!isExploding) {
+		if(!isExploding && !isBeingDestroyed) {
 			char letter = word.charAt(correctLetters);
 			if(letterTyped == letter) {
 				correctLetters++;

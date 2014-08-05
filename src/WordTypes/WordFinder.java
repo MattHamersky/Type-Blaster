@@ -170,21 +170,22 @@ public class WordFinder {
 		//originally 13
 		int specialWord = rand.nextInt(13); //random int to decide which of the special words we spawn in
 		//fast words
-		if(specialWord >= 0 && specialWord <= 3) {
-			return new FastWord(getWord(), row, explosion, destroyedExplosion);
-		}
+		//if(specialWord >= 0 && specialWord <= 3) {
+		//	return new FastWord(getWord(), row, explosion, destroyedExplosion);
+		//}
 		//rainbow words
-		else if(specialWord >= 4 && specialWord <= 7) {
-			return new RainbowWord(getWord(), row, rainbowExplosion, rainbowExplosion);
-		}
+		//else if(specialWord >= 4 && specialWord <= 7) {
+		//	return new RainbowWord(getWord(), row, rainbowExplosion, rainbowExplosion);
+		//}
 		//flashy words
-		else {
+		//else {
 			return getFlashyWord(row);
-		}
+		//}
 	}
 	
 	private static FlashyWord getFlashyWord(int row) {
-		int newSpecialWord = rand.nextInt(7); //number of "flashy" words i have
+		//int newSpecialWord = rand.nextInt(7); //number of "flashy" words i have
+		int newSpecialWord = rand.nextInt(1)+2;
 		switch(newSpecialWord) {
 			case 0:
 				return new NuclearWord("nuclear", row, nuclearExplosion, nuclearExplosion);

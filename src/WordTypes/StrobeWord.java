@@ -10,13 +10,13 @@ import java.awt.geom.Rectangle2D;
 
 public class StrobeWord extends FlashyWord {
 
-	//private float[] strobeIntensities = {.
 	private long startTime;
 	private long delay = 100;
 	private int numOfStrobes = 10;
 	private int currNumOfStrobes = 0;
 	
-	private boolean drawExplosion = false;
+	private boolean drawStrobe = false;
+	private int updates = 0;
 	
 	public StrobeWord(String word, int row) {
 		super(word, row, null, null);
@@ -31,10 +31,17 @@ public class StrobeWord extends FlashyWord {
 		if(startTime == 0) {
 			startTime = System.currentTimeMillis();
 		}
-		if((System.currentTimeMillis() - startTime) > delay) {
-			drawExplosion = true;
-			currNumOfStrobes++;
-			startTime = System.currentTimeMillis();
+		if(isBeingDestroyed || isExploding) {
+			updates++;
+			
+			//every other update we draw a strobe
+			if(updates % 2 == 0) {
+				drawStrobe = true;
+				currNumOfStrobes++;
+			}
+			else {
+				drawStrobe = false;
+			}			
 		}
 		if(currNumOfStrobes >= numOfStrobes) {
 			toBeDeleted = true;
@@ -44,8 +51,7 @@ public class StrobeWord extends FlashyWord {
 	@Override
 	public void drawExplosionProgress(Graphics2D g) {
 		//strobe it up
-		if(drawExplosion) {
-			drawExplosion = false;
+		if(drawStrobe) {
 			g.setColor(Color.WHITE);
 			g.fillRect(
 					0,
