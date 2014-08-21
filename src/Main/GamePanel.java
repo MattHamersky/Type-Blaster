@@ -174,6 +174,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 		
 	}
 	
+	public static int GetScreenWorkingWidth() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().width;
+	}
+
+	public static int GetScreenWorkingHeight() {
+	    return java.awt.GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds().height;
+	}
+	
 	@Override
 	public void keyPressed(KeyEvent key) {
 		if(key.getKeyCode() == KeyEvent.VK_SHIFT) {
