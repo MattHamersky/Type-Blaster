@@ -73,6 +73,10 @@ public class OpeningState extends GameState {
 		);
 	}
 	
+	public void reloadState() {
+		
+	}
+	
 	@Override
 	public void keyPressed(int key) {
 		if(key == KeyEvent.VK_UP ||

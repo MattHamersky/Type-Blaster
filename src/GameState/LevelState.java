@@ -1,6 +1,5 @@
 package GameState;
 
-import Main.GamePanel;
 import WordTypes.ClearWord;
 import WordTypes.Word;
 import WordTypes.WordFinder;
@@ -20,12 +19,12 @@ import java.util.Random;
 
 public class LevelState extends GameState {
 
-	//hard coded constants to line up with the spaceship's top and bottom and edge
-	public static final int ROWS_START = 90;
-	public static final int ROWS_END = 660;
-	public static final int ROW_HEIGHT = 30;
-	public static final int SPACESHIP_EDGE = 40; //where the words collide with the ship
-	public static final double START_NEW_WORD_EDGE = 0.30; //how close a word can be to the ship before we start a new word on that row
+	//constants to line up with the spaceship's top and bottom and edge
+	public static int ROWS_START = (int) (Main.Init.HEIGHT / 8);
+	public static int ROWS_END = (int) (Main.Init.HEIGHT / 1.1);
+	public static int ROW_HEIGHT = (int) (Main.Init.HEIGHT / 24);
+	public static int SPACESHIP_EDGE = (int) (Main.Init.WIDTH / 32); //where the words collide with the ship
+	public static double START_NEW_WORD_EDGE = 0.30; //how close a word can be to the ship before we start a new word on that row
 	
 	private Font uiFont;
 	private Font gameoverFont;
@@ -81,18 +80,31 @@ public class LevelState extends GameState {
 
 	@Override
 	public void init() {
-		try {
-			
-			uiFont = new Font("Arial", Font.PLAIN, 18);
-			gameoverFont = new Font("Arial", Font.BOLD, 26);
-			gameoverScoreFont = new Font("Arial", Font.BOLD, 22);
-			wordFont = new Font("Arial", Font.PLAIN, 22);
-			
 			rand = new Random(System.currentTimeMillis());
 			specialWordRand = new Random(System.currentTimeMillis()+System.currentTimeMillis());
 			randScoreEffects = new Random(System.currentTimeMillis() / 2);
-			
-			spaceShip = ImageIO.read(getClass().getResourceAsStream("/sprites/spaceship.png"));
+	}
+	
+	@Override
+	public void reloadState() {
+		ROWS_START = (int) (Main.Init.HEIGHT / 8);
+		ROWS_END = (int) (Main.Init.HEIGHT / 1.1);
+		ROW_HEIGHT = (int) (Main.Init.HEIGHT / 24);
+		SPACESHIP_EDGE = (int) (Main.Init.WIDTH / 32);
+		
+		uiFont = new Font("Arial", Font.PLAIN, (int)(Main.Init.HEIGHT / 40));
+		gameoverFont = new Font("Arial", Font.BOLD, (int)(Main.Init.HEIGHT / 27.7));
+		gameoverScoreFont = new Font("Arial", Font.BOLD, (int)(Main.Init.HEIGHT / 32.7));
+		wordFont = new Font("Arial", Font.PLAIN, (int)(Main.Init.HEIGHT / 32.7));
+		
+		
+		//////////////////////////////////
+		//////////////////////////////////
+		//read in and scale images according to screen resolution!!!!!!!!!!!!
+		//////////////////////////////////
+		//////////////////////////////////
+		try {
+			spaceShip = ImageIO.read(getClass().getResourceAsStream("/sprites/spaceship.png")); 
 			
 			sky = new BufferedImage[3];
 			sky[0] = ImageIO.read(getClass().getResourceAsStream("/sprites/sky/sky1.png"));
@@ -219,7 +231,7 @@ public class LevelState extends GameState {
 		int counter = 0;
 		for(int i = 0; i < checkList.size(); i++) {
 			if(checkList.get(i).getRow() == newRow) { //if the new row is already in use
-				if((checkList.get(i).getX() < (GamePanel.WIDTH * START_NEW_WORD_EDGE))) { //check that the word is sufficiently close to the ship to start a new word on the same line
+				if((checkList.get(i).getX() < (Main.Init.WIDTH * START_NEW_WORD_EDGE))) { //check that the word is sufficiently close to the ship to start a new word on the same line
 					break;
 				}
 			}
@@ -270,34 +282,36 @@ public class LevelState extends GameState {
 		//draw health bar
 		g.setColor(Color.RED);
 		g.fillRect(
-				140,
-				10,
+				(int) (Main.Init.WIDTH / 9),
+				(int) (Main.Init.HEIGHT / 72),
 				currHealth * HEALTH_MODIFIER[MainMenuState.difficulty],
-				50
+				(int) (Main.Init.HEIGHT / 14.4)
 		);
 		
 		//draw health string (?/1000)
+		FontMetrics fm = g.getFontMetrics();
+		Rectangle2D rect = fm.getStringBounds(currHealth + "/" + HEALTH[MainMenuState.difficulty], g);
 		g.setColor(Color.WHITE);
 		g.drawString(
 				currHealth + "/" + HEALTH[MainMenuState.difficulty],
-				GamePanel.WIDTH / 2,
-				40
+				(int)((Main.Init.WIDTH / 2) - (rect.getWidth() / 2)),
+				(int) (Main.Init.HEIGHT / 18)
 		);
 		
 		//draw space ship
 		g.drawImage(
 				spaceShip,
-				-115,
-				55,
+				-(int)(Main.Init.HEIGHT / 6.3),
+				(int)(Main.Init.HEIGHT / 13.1),
 				null
 		);
 		
 		//draw score
-		FontMetrics fm = g.getFontMetrics();
-		Rectangle2D rect = fm.getStringBounds(Long.toString(score), g);
+		fm = g.getFontMetrics();
+		rect = fm.getStringBounds(Long.toString(score), g);
 		scoreWidth = (int) rect.getWidth();
-		int scoreX = (int) ((GamePanel.WIDTH / 2) - (rect.getWidth() / 2));
-		int scoreY = (int) (GamePanel.HEIGHT - rect.getHeight() - 10);
+		int scoreX = (int) ((Main.Init.WIDTH / 2) - (rect.getWidth() / 2));
+		int scoreY = (int) (Main.Init.HEIGHT - rect.getHeight() - (int)(Main.Init.HEIGHT / 72));
 		scoreXStart = scoreX;
 		scoreYStart = scoreY;
 		g.setColor(Color.WHITE);
@@ -330,10 +344,10 @@ public class LevelState extends GameState {
 			//draw black background
 			g.setColor(Color.BLACK);
 			g.fillRect(
-					GamePanel.WIDTH / 2 - 200,
-					GamePanel.HEIGHT / 2 - 200,
-					400,
-					200
+					Main.Init.WIDTH / 2 - (int)(Main.Init.WIDTH / 6.4),
+					Main.Init.HEIGHT / 2 - (int)(Main.Init.HEIGHT / 3.6),
+					(int) (Main.Init.WIDTH / 3.2),
+					(int) (Main.Init.HEIGHT / 3.6)
 			);
 			
 			//draw "Game Over - DIFFICULTY"
@@ -343,8 +357,8 @@ public class LevelState extends GameState {
 			g.setColor(Color.WHITE);
 			g.drawString(
 					"GAME OVER - " + MainMenuState.getDifficulty(),
-					(int) ((GamePanel.WIDTH / 2) - (rect.getWidth() / 2)),
-					(int) (GamePanel.HEIGHT / 2 - 150)
+					(int) ((Main.Init.WIDTH / 2) - (rect.getWidth() / 2)),
+					(int) (Main.Init.HEIGHT / 2 - (int)(Main.Init.HEIGHT / 4.8))
 			);
 			
 			//draw score
@@ -353,8 +367,8 @@ public class LevelState extends GameState {
 			rect = fm.getStringBounds("Score: " + Long.toString(score), g);
 			g.drawString(
 					"Score: " + Long.toString(score),
-					(int) ((GamePanel.WIDTH / 2 - (rect.getWidth() / 2))),
-					(int) ((GamePanel.HEIGHT / 2) - 100)
+					(int) ((Main.Init.WIDTH / 2 - (rect.getWidth() / 2))),
+					(int) ((Main.Init.HEIGHT / 2) - (int)(Main.Init.HEIGHT / 7.2))
 			);
 			
 			//draw "highscores" button
@@ -362,8 +376,8 @@ public class LevelState extends GameState {
 			rect = fm.getStringBounds("Hit 'Enter' for Highscores", g);
 			g.drawString(
 					"Hit 'Enter' for Highscores",
-					(int) ((GamePanel.WIDTH / 2) - (rect.getWidth() / 2)),
-					(int) ((GamePanel.HEIGHT / 2) - 50)
+					(int) ((Main.Init.WIDTH / 2) - (rect.getWidth() / 2)),
+					(int) ((Main.Init.HEIGHT / 2) - (int)(Main.Init.HEIGHT / 14.4))
 			);
 		}
 	}

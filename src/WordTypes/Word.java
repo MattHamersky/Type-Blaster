@@ -17,8 +17,8 @@ public class Word {
 	protected BufferedImage[] explosion;
 	
 	protected double speed = ((MainMenuState.difficulty + 1) * 3) / 2;
-	protected double x = 1300; //start slightly offscreen on the right
-	protected double adjustedXValue = 1300;
+	protected double x = Main.Init.WIDTH + 20; //start slightly offscreen on the right
+	protected double adjustedXValue = x;
 	protected double y;
 	protected int row;
 	protected Color wordColor = Color.WHITE;

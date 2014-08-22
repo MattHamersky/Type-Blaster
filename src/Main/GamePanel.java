@@ -2,20 +2,18 @@ package Main;
 
 import GameState.GameStateManager;
 
+import java.awt.Canvas;
 import javax.swing.JPanel;
 import java.awt.image.BufferedImage;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.Dimension;
+
 import java.awt.event.KeyListener;
 import java.awt.event.KeyEvent;
 
-public class GamePanel extends JPanel implements Runnable, KeyListener {
-
-	public static final int WIDTH = 1280;
-	public static final int HEIGHT = 720;
+public class GamePanel extends Canvas implements Runnable, KeyListener {
 	
 	private Thread thread;
 	private int fps;
@@ -41,24 +39,31 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	public GamePanel() {
 		
 		super();
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setFocusable(true);
 		requestFocus();
 		
-	}
-	
-	public void addNotify() {
-		super.addNotify();
 		if(thread == null) {
 			thread = new Thread(this);
 			thread.start();
 		}
 		addKeyListener(this);
+		
+	}
+	
+	@Override
+	public void addNotify() {
+		super.addNotify();
+		if(Init.fullscreen) {
+			//setDoubleBuffered(false);
+		}
+		else {
+			//setDoubleBuffered(true);
+		}
 	}
 	
 	public void run() {
 		
-		init();
+		fullInit();
 		
 		while(isRunning) {
 			
@@ -88,23 +93,36 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 			
 			//total time it took to finalize one tick
 			timeElapsed = (System.nanoTime() - startTime - updateElapsedTime) / 1000000;
+			if(timeElapsed <= 0) {
+				timeElapsed = 1;
+			}
 			
 			//how much time gets added to the accumulator which keeps tabs on when our next update should be
 			accumulatedTime += timeElapsed;
 			
 			fps = (int) (1000 / timeElapsed);
+			
+			if(Init.doesScreenChange()) {
+				partialInit();
+			}
 		}
 	}
 	
-	public void init() {
+	public void fullInit() {
 		
-		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_ARGB);
-		g = image.createGraphics();
+		partialInit();
 		
 		gsm = new GameStateManager();
 		
 		infoFont = new Font("Arial", Font.PLAIN, 12);
 		
+	}
+	
+	public void partialInit() {
+		if(!Init.fullscreen) {
+			image = new BufferedImage(Init.WIDTH, Init.HEIGHT, BufferedImage.TYPE_INT_ARGB);
+			g = image.createGraphics();
+		}
 	}
 	
 	public void update() {
@@ -113,8 +131,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	public void render() {
 		
+		if(Init.fullscreen && !Init.restart) {
+			g = (Graphics2D) Init.bufferStrat.getDrawGraphics();
+		}
+		
 		g.setColor(Color.BLACK);
-		g.fillRect(0, 0, WIDTH, HEIGHT);
+		g.fillRect(0, 0, Init.WIDTH, Init.HEIGHT);
 		
 		
 		double tweenValueForUpdates = (Math.min(1.0, percentBetweenUpdates));
@@ -160,6 +182,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 					15,
 					90
 			);
+			
+			g.drawString(
+					"Resolution: " + Integer.toString(Init.WIDTH) + "x" + Integer.toString(Init.HEIGHT),
+					15,
+					105
+			);
 					
 		}
 	}
@@ -167,10 +195,16 @@ public class GamePanel extends JPanel implements Runnable, KeyListener {
 	
 	public void draw() {
 		
-		Graphics bbg = getGraphics();
-		bbg.drawImage(image, 0, 0, WIDTH, HEIGHT, null);
-		bbg.dispose();
-		//image.flush();
+		if(Init.fullscreen && !Init.restart) {
+			g.dispose();
+			Init.bufferStrat.show();
+		}
+		else {
+			Graphics bbg = getGraphics();
+			bbg.drawImage(image, 0, 0, Init.WIDTH, Init.HEIGHT, null);
+			bbg.dispose();
+			//image.flush();
+		}
 		
 	}
 	

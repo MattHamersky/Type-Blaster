@@ -25,11 +25,13 @@ public class MainMenuState extends GameState {
 	
 	private SoundHandler sound = new SoundHandler();
 	
+	private boolean didScreenChange = false;
+	
 	private Font titleFont;
 	private Font menuOptionsFont;
 	
 	private int selectedOption = 0;
-	private String[] menuOptions = {"Start", "Difficulty: ","Music: ", "Highscores", "Quit"};
+	private String[] menuOptions = {"Start", "Difficulty: ","Highscores", "Music: ", "Fullscreen: ", "Quit"};
 	public static int EASY = 0;
 	public static int MEDIUM = 1;
 	public static int HARD = 2;
@@ -40,6 +42,9 @@ public class MainMenuState extends GameState {
 	
 	public static int soundState = 1;
 	private static String[] soundStates = {"Off", "On"};
+	
+	public static int fullscreenState = 0;
+	private static String[] fullscreenStates = {"Off", "On"};
 	
 	public static boolean isNewGame = true;
 	
@@ -52,20 +57,47 @@ public class MainMenuState extends GameState {
 	
 	@Override
 	public void init() {
-		titleFont = new Font("Arial", Font.BOLD, 22);
-		menuOptionsFont = new Font("Arial", Font.PLAIN, 18);
 		sound.start();
+		if(Main.Init.fullscreen) {
+			fullscreenState = 1;
+		}
+		else {
+			fullscreenState = 0;
+		}
+	}
+	
+	@Override
+	public void reloadState() {
+		titleFont = new Font("Arial", Font.BOLD, (int)(Main.Init.HEIGHT / 32.7));
+		menuOptionsFont = new Font("Arial", Font.PLAIN, (int)(Main.Init.HEIGHT / 40));
 	}
 	
 	@Override
 	public void update() {
 		isNewGame = true;
 		menuOptions[1] = "Difficulty: " + difficulties[difficulty];
-		menuOptions[2] = "Music: " + soundStates[soundState];
+		menuOptions[3] = "Music: " + soundStates[soundState];
+		menuOptions[4] = "Fullscreen: " + fullscreenStates[fullscreenState];
 		if(soundState == 0)
 			sound.stop();
 		else
 			sound.start();
+		
+		if(didScreenChange) {
+			reloadState();
+			didScreenChange = false;
+		}
+		
+		if(!Main.Init.fullscreen && fullscreenState == 1) {
+			Main.Init.fullscreen = true;
+			Main.Init.restart = true;
+			didScreenChange = true;
+		}
+		else if(Main.Init.fullscreen && fullscreenState == 0) {
+			Main.Init.fullscreen = false;
+			Main.Init.restart = true;
+			didScreenChange = true;
+		}
 	}
 	
 	@Override
@@ -80,8 +112,8 @@ public class MainMenuState extends GameState {
 		g.setColor(Color.WHITE);
 		g.drawString(
 				TITLE,
-				(int) ((GamePanel.WIDTH / 2) - (rect.getWidth() / 2)),
-				(int) GamePanel.HEIGHT / 2
+				(int) ((Main.Init.WIDTH / 2) - (rect.getWidth() / 2)),
+				(int) Main.Init.HEIGHT / 2
 		);
 		
 		//draw menu options
@@ -97,8 +129,8 @@ public class MainMenuState extends GameState {
 			}
 			g.drawString(
 					menuOptions[i],
-					(int) ((GamePanel.WIDTH / 2) - (rect.getWidth() / 2)),
-					(int) GamePanel.HEIGHT / 2 + ((i+1) * 20)
+					(int) ((Main.Init.WIDTH / 2) - (rect.getWidth() / 2)),
+					(int) Main.Init.HEIGHT / 2 + ((i+1) * (int)(Main.Init.HEIGHT / 36))
 			);
 		}
 	}
@@ -114,14 +146,20 @@ public class MainMenuState extends GameState {
 					difficulty = 0;
 				break;
 			case 2:
+				gsm.changeState(GameStateManager.HIGHSCORESTATE);
+				break;
+			case 3:
 				soundState++;
 				if(soundState == soundStates.length)
 					soundState = 0;
 				break;
-			case 3:
-				gsm.changeState(GameStateManager.HIGHSCORESTATE);
-				break;
 			case 4:
+				fullscreenState++;
+				if(fullscreenState == fullscreenStates.length) {
+					fullscreenState = 0;
+				}
+				break;
+			case 5:
 				System.exit(0);
 				break;
 			default:

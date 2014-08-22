@@ -56,8 +56,8 @@ public class StrobeWord extends FlashyWord {
 			g.fillRect(
 					0,
 					0,
-					GamePanel.WIDTH,
-					GamePanel.HEIGHT
+					Main.Init.WIDTH,
+					Main.Init.HEIGHT
 			);
 		}
 	}

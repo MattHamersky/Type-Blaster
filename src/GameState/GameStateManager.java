@@ -39,6 +39,7 @@ public class GameStateManager {
 		if(changeState) {
 			changeState = false;
 			currentState = stateToChangeTo;
+			gameStates[currentState].reloadState();
 		}
 		gameStates[currentState].update();
 	}
@@ -48,15 +49,21 @@ public class GameStateManager {
 	}
 	
 	public void keyPressed(int code) {
-		gameStates[currentState].keyPressed(code);
+		if(gameStates[currentState] != null) {
+			gameStates[currentState].keyPressed(code);
+		}
 	}
 	
 	public void keyReleased(int code) {
-		gameStates[currentState].keyReleased(code);
+		if(gameStates[currentState] != null) {
+			gameStates[currentState].keyReleased(code);
+		}
 	}
 	
 	public void keyTyped(char letter) {
-		gameStates[currentState].keyTyped(letter);
+		if(gameStates[currentState] != null) {
+			gameStates[currentState].keyTyped(letter);
+		}
 	}
 
 }

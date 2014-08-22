@@ -94,10 +94,13 @@ public class HighScoreState extends GameState{
 		for(int i = 0; i < highscores.length; i++) {
 			sortArray(highscores[i]);
 		}
-		
+	}
+	
+	@Override
+	public void reloadState() {
 		//create fonts
-		highScoreFont = new Font("Arial", Font.BOLD, 42);
-		highScoresFont = new Font("Arial", Font.PLAIN, 36);
+		highScoreFont = new Font("Arial", Font.BOLD, (int)(Main.Init.HEIGHT / 17.1));
+		highScoresFont = new Font("Arial", Font.PLAIN, (int)(Main.Init.HEIGHT / 20));
 	}
 	
 	private void sortArray(HighScore[] scores) {
@@ -239,23 +242,23 @@ public class HighScoreState extends GameState{
 		rect = fm.getStringBounds("Highscores - " + MainMenuState.getDifficulty(), g);
 		g.drawString(
 				"Highscores - " + MainMenuState.getDifficulty(),
-				(int) ((GamePanel.WIDTH / 2) - (rect.getWidth() / 2)),
-				(int) (40)
+				(int) ((Main.Init.WIDTH / 2) - (rect.getWidth() / 2)),
+				(int) (Main.Init.HEIGHT / 18)
 		);
 		
 		//draw individual ranks and names
 		g.setFont(highScoresFont);
 		for(int i = 0; i < 10; i++) {
 			String line = (i+1) + ". \t\t\t" + highscores[MainMenuState.difficulty][i].getName();
-			drawtabString(g, line, 20, 110 + i * 60);
+			drawtabString(g, line, (int)(Main.Init.WIDTH / 64), (int)((Main.Init.HEIGHT / 7.2) + i * (Main.Init.HEIGHT / 12)));
 		}
 		
 		//draw individual scores
 		for(int i = 0; i < 10; i++) {
 			g.drawString(
 					"" + highscores[MainMenuState.difficulty][i].getScore(),
-					(GamePanel.WIDTH / 2) + (GamePanel.WIDTH / 5),
-					110 + i * 60
+					(Main.Init.WIDTH / 2) + (Main.Init.WIDTH / 5),
+					(int)((Main.Init.HEIGHT / 7.2) + i * (Main.Init.HEIGHT / 12))
 			);
 		}
 	}

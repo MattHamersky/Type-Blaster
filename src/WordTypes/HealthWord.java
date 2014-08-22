@@ -32,7 +32,7 @@ public class HealthWord extends FlashyWord {
 			animation.update();
 		}
 		else {
-			if(widthCounter > GamePanel.WIDTH && heightCounter > GamePanel.HEIGHT) {
+			if(widthCounter > Main.Init.WIDTH && heightCounter > Main.Init.HEIGHT) {
 				toBeDeleted = true;
 			}
 			else {
@@ -63,8 +63,8 @@ public class HealthWord extends FlashyWord {
 			g.setColor(Color.CYAN);
 			for(int i = 0; i < EDGE_WIDTH; i++) {
 				g.draw(new Rectangle(
-						(GamePanel.WIDTH / 2) - (widthCounter / 2) - (i + 1),
-						(GamePanel.HEIGHT / 2) - (heightCounter / 2) - (i + 1),
+						(Main.Init.WIDTH / 2) - (widthCounter / 2) - (i + 1),
+						(Main.Init.HEIGHT / 2) - (heightCounter / 2) - (i + 1),
 						widthCounter+((i+1)*2),
 						heightCounter+((i+1)*2)
 				));

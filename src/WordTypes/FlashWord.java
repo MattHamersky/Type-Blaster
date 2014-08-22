@@ -46,8 +46,8 @@ public class FlashWord extends FlashyWord {
 				g.fillRect(
 						0,
 						0,
-						GamePanel.WIDTH,
-						GamePanel.HEIGHT
+						Main.Init.WIDTH,
+						Main.Init.HEIGHT
 				);
 				g.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER, 1f));
 			}

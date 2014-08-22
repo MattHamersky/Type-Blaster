@@ -168,7 +168,7 @@ public class WordFinder {
 	
 	public static Word getSpecialWord(int row) {
 		//originally 13
-		int specialWord = rand.nextInt(13); //random int to decide which of the special words we spawn in
+		int specialWord = rand.nextInt(14); //random int to decide which of the special words we spawn in
 		//fast words
 		if(specialWord >= 0 && specialWord <= 3) {
 			return new FastWord(getWord(), row, explosion, destroyedExplosion);
